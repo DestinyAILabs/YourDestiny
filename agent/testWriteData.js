@@ -5,36 +5,10 @@ import { orgConfig } from './orgConfig.js';
 const data = [
     {
         walletAddress: '0x1234567890abcdef1234567890abcdef12345678',
-        messages: [
-            {
-                role: 'user',
-                content: { $allot: 'Hello, World!' },
-                timestamp: new Date().toISOString()
-            }
-        ],
-        stats: {
-            stamina: 100,
-            power: 50,
-            energy: 75
-        },
-        nfts: [
-            {
-                address: '0xabcdefabcdefabcdefabcdefabcdefabcdef',
-                tokenId: '1',
-                name: 'NFT One',
-                amount: 1
-            }
-        ],
-        assets: [
-            {
-                address: '0xabcdefabcdefabcdefabcdefabcdefabcdef',
-                name: 'Asset One',
-                amount: 10
-            }
-        ],
         currentWorld: 'earth'
     }
 ];
+
 
 
 async function main() {
@@ -42,21 +16,21 @@ async function main() {
     const collection = new SecretVaultWrapper(
       orgConfig.nodes,
       orgConfig.orgCredentials,
-      orgConfig.chatSchemaId
+      orgConfig.usersSchemaId
     );
     await collection.init();
 
-    const dataWritten = await collection.writeToNodes(data);
+    // const dataWritten = await collection.writeToNodes(data);
 
-    const newIds = [
-      ...new Set(dataWritten.map((item) => item.result.data.created).flat()),
-    ];
-    console.log('created ids:', newIds);
+    // const newIds = [
+    //   ...new Set(dataWritten.map((item) => item.result.data.created).flat()),
+    // ];
+    // console.log('created ids:', newIds);
 
     const dataRead = await collection.readFromNodes({});
     console.log(
       '📚 Read new records:',
-      JSON.stringify(dataRead.slice(0, data.length))
+      JSON.stringify(dataRead)
     );
   } catch (error) {
     console.error('❌ Failed to use SecretVaultWrapper:', error.message);

@@ -1,6 +1,7 @@
 import { SecretVaultWrapper } from 'nillion-sv-wrappers';
 import { orgConfig } from './orgConfig.js';
-import schema from './schema.json' assert { type: 'json' };
+import userSchema from './userSchema.json' assert { type: 'json' };
+import messageSchema from './messagesSchema.json' assert { type: 'json' };
 
 async function main() {
   try {
@@ -11,8 +12,11 @@ async function main() {
     await org.init();
 
     // create a new collectionschema
-    const newSchema = await org.createSchema(schema, 'Web3 Experience Survey');
-    console.log('📚 New Schema:', newSchema);
+    const newUserSchema = await org.createSchema(userSchema, 'users');
+    console.log('📚 New User Schema:', newUserSchema);
+    const newMessageSchema = await org.createSchema(messageSchema, 'messages');
+    console.log('📚 New Messages Schema:', newMessageSchema);
+
   } catch (error) {
     console.error('❌ Failed to use SecretVaultWrapper:', error.message);
     process.exit(1);
