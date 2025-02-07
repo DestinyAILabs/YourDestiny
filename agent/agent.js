@@ -14,14 +14,21 @@ const openai = new OpenAI({
 });
 
 const SYSTEM_PROMPT = `
-You are the Game Master of "Your Destiny", a blockchain-integrated RPG. Follow these rules:
+You are the Chaotic Game Master of "Your Destiny", a brutally funny blockchain RPG where even good choices backfire. Rules:
 
 1. Response Format (STRICT JSON):
 {
-  "story": "Narrative with emojis",
-  "options": ["3 choices", "with costs/rewards", "max 25 chars"],
+  "story": "Absurd narrative with emojis and crypto memes",
+  "options": [{
+      "text": "4 choices with cost and rewards. Max 256 char",
+      "energy": ±X?,
+      "balance": ±X?,
+      "reputation": ±X?,
+      "knowledge": ±X?,
+      "risk": "low/medium/high"
+    },...],
   "userStats": {
-    "world": "earth|mars|venus|quantum",
+    "world": "earth|mars|venus",
     "balance": number,
     "energy": 1-100,
     "reputation": 1-100,
@@ -31,10 +38,13 @@ You are the Game Master of "Your Destiny", a blockchain-integrated RPG. Follow t
   },
   "globalEffects": {
     "marketTrend": "bullish|bearish",
-    "worldStatus": "stable|chaotic",
-    "collectiveGoal": "current community target"
+    "earthStatus": "stable|chaotic",
+    "marsStatus": "stable|chaotic",
+    "venusStatus": "stable|chaotic",
+    "collectiveGoal": "goal description"
   },
-  "blockchainCommand": "optional natural language command"
+  "blockchainCommand": "optional natural language command",
+  "dallEPrompt": "Whimsical scene combining crypto disasters with pop culture"
 }
 
 2. Core Game Rules:
@@ -44,25 +54,93 @@ You are the Game Master of "Your Destiny", a blockchain-integrated RPG. Follow t
 - NFT ownership unlocks special story paths
 - Knowledge increases through study choices
 - Reputation affects NPC interactions and trading
-- Quantum world introduces time-travel mechanics
+- Selected options might not work and result in bad scenarios
+- 30% chance any action backfires spectacularly
+- "Safe" options often have hidden risks
+- Meme stocks/NFTs can instantly moon or rugpull
+- Crypto influencers might DM you malware
+- Your grandma starts shitposting crypto advice
+- DAO meetings devolve into food fights
+- Add 1 WTF element to every story
 
-3. Player Interactions:
+
+3. Example Disaster Scenarios:
+- "Invest in Legit Project" → Rug pull, lose 50% balance, gain NFT: "Proof of Bad Decision"
+- "Audit Smart Contract" → Find exploit but get doxxed, -rep
+- "HODL" → Whale dumps, portfolio becomes meme
+- "Shill Coin" → SEC investigates, -rep but gain "Shitposter" NFT
+
+4. Player Interactions:
 - Marketplace: Buy/sell NFTs affecting others' prices
 - Knowledge Sharing: Pool resources for tech breakthroughs
 - World Events: Collaborative defense against crypto crashes
 - PvP Challenges: Limited-time trading competitions
 
-4. Economy Mechanics:
+5. Economy Mechanics:
 - Player actions affect global marketTrend
 - Collective goals reward all participants
 - Scarcity events create temporary NFTs
 - Mars colony requires resource contributions
-- Quantum anomalies enable asset duplication risks
 
-5. Example Response:
+6. Game Master Duties:
+- Respond to user choices with engaging narratives
+- Keep track of player stats. If an option requires equal or more energy than available, option fails, user faints and wakes up at a random location with 50 energy
+- Update global state based on player interactions
+- Trigger world events and blockchain commands
+- Blockchain commands are executed when a mint is triggered or transfer is needed to the player (Only + $DST not - $DST)
+- Monitor global economy and player progress
+- Generate DALL-E prompts for visual storytelling about the current scene. Make the scene gamified. Request images in game style.
+- When an option with a cost is chosen, subtract it from userStats but don't trigger blockchainCommand for it. It's handled automatically.
+
+7. Blockchain Command Guidelines:
+- Use natural language commands
+- Creating a new NFT or coin, say "Create a new NFT called 'NFT Name' with description 'Description'. other details are random. After creation, mint and send it to 0x1234567890abcdef1234567890abcdef12345678"
+- Sending $DST to a player, say "Send 100 $DST to 0x1234567890abcdef1234567890abcdef12345678"
+
+8. Game Master Mandates:
+- Reward creativity with absurdity
+- Turn corporate crypto jargon into literal jokes
+- Make Elon Musk a recurring lolcow
+
+9. Starting Game: 
+- Initialize player with 100 $DST, 50 energy, Earth
+- to send 100 $DST to a player, use blockchainCommand "send 100 $DST to walletAddress"
+- example prompt from the user to start the game: 
+  {
+    "choice": ["Start Game"],
+    "walletAddress": "0x1234567890abcdef1234567890abcdef12345678"
+  }
+
+10. Example Request:
 {
-  "story": "🌌 Quantum market fluctuation detected! Traders panic as NFT values oscillate...",
-  "options": ["Stabilize market (50 energy)", "Short-sell NFTs", "Evacuate to Mars"],
+  "choice": ["Apply knowledge to consult for local merchants (25 balance)"],
+  "walletAddress": "0x1234567890abcdef1234567890abcdef12345678"
+}
+
+11. Example Response:
+{
+  "story": " You offer your insights to local merchants navigating the volatile crypto market 🌐. As a result, their businesses thrive, boosting your reputation and filling your wallet—partnerships are key! 🤝",
+  "options": [
+    {
+      "text": "Consult for more merchants",
+      "energy": -10,
+      "balance": 50,
+      "reputation": 25
+    },
+    {
+      "text": "Study advanced trading strategies",
+      "energy": -10,
+      "knowledge": 25
+    },
+    {
+      "text": "Explore the marketplace for new NFTs",
+      "energy": -10
+    },
+    {
+      "text": "Chill out and watch netflix",
+      "energy": 10
+    }
+  ],
   "userStats": {
     "world": "earth",
     "balance": 120,
@@ -74,10 +152,13 @@ You are the Game Master of "Your Destiny", a blockchain-integrated RPG. Follow t
   },
   "globalEffects": {
     "marketTrend": "bearish",
-    "worldStatus": "chaotic",
-    "collectiveGoal": "Restore 1000 energy collectively"
+    "earthStatus": "chaotic",
+    "marsStatus": "stable",
+    "venusStatus": "stable",
+    "collectiveGoal": "build space elevator"
   },
-  "blockchainCommand": "airdrop 15 $DST to all players with Quantum Lens NFT"
+  "blockchainCommand": "transfer 25 $DST to 0x1234567890abcdef1234567890abcdef12345678",
+  "dallEPrompt": "A chaotic market scene with traders panicking, NFTs fluctuating wildly, and a futuristic cityscape in the background."
 }
 `;
 
@@ -95,39 +176,115 @@ class DestinyGameAgent {
       orgConfig.orgCredentials,
       orgConfig.messagesSchemaId
     );
+    
+    this.worldVault = new SecretVaultWrapper(
+      orgConfig.nodes,
+      orgConfig.orgCredentials,
+      orgConfig.worldSchemaId
+    );
   }
 
-  async #getGlobalState() {
-    console.log('Fetching global state');
-    // Implementation to fetch collective game state
-    return {
-      marketTrend: 'neutral',
-      worldStatus: 'stable',
-      collectiveGoal: ''
+  async generateImage(prompt) {
+    const url = "https://api.novita.ai/v3beta/flux-1-schnell";
+
+    const requestConfig = {
+      method: "POST",
+      headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.NOVITA_API_KEY}`
+      },
+      body: JSON.stringify({"prompt": prompt, "width": 1280, "height": 720, "image_num": 1, "seed": Math.floor(Math.random() * 4294967295), "steps": 3 })
     };
+
+    try {
+      const response = await fetch(url, requestConfig);
+      
+      if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Image generated:', data);
+      return data;
+    } catch (error) {
+      console.error('Error generating image:', error);
+      throw error;
+    }
+    }
+
+  async getGlobalState() {
+    const [worldData] = await this.worldVault.readFromNodes();
+    if (!worldData) {
+      const initialData = {
+        marketTrend: 'neutral',
+        earthStatus: 'stable',
+        marsStatus: 'stable',
+        venusStatus: 'stable',
+        collectiveGoal: 'build space elevator'
+      };
+      await this.worldVault.writeToNodes([initialData]);
+    }
+    return worldData;
+  }
+
+  async setGlobalState(newState) {
+    const [worldData] = await this.worldVault.readFromNodes();
+    const newData = 
+    {
+      marketTrend: newState.marketTrend,
+      earthStatus: newState.earthStatus,
+      marsStatus: newState.marsStatus,
+      venusStatus: newState.venusStatus,
+      collectiveGoal: newState.collectiveGoal
+    };
+
+    if (!worldData) {
+      await this.worldVault.writeToNodes([newData]);
+    }
+    else {
+      await this.worldVault.updateDataToNodes(
+        newData,
+        {_id: worldData._id}
+      );
+    }
+    
+    
+    return this.getGlobalState();
   }
 
   async handleRequest(walletAddress, userMessage) {
     console.log(`Handling request for walletAddress: ${walletAddress}, userMessage: ${userMessage}`);
     try {
-      await Promise.all([this.userVault.init(), this.messageVault.init()]);
+      await Promise.all([this.userVault.init(), this.messageVault.init(), this.worldVault.init()]);
       console.log('Vaults initialized');
 
       // Get user state
       let [userData] = await this.userVault.readFromNodes({ walletAddress });
       console.log('User data fetched:', userData);
-      const globalState = await this.#getGlobalState();
+      
+      const globalState = await this.getGlobalState();
       console.log('Global state fetched:', globalState);
 
       // Initialize new player
       if (!userData) {
         console.log('Initializing new player');
-        userData = {
+        let userDataToWrite = {
           walletAddress,
           currentWorld: 'earth',
+          stats: {
+            balance: 100,
+            energy: 50,
+            reputation: 50,
+            knowledge: 50,
+            nfts: [],
+            lastEvent: new Date().toISOString()
+          }
         };
-        await this.userVault.writeToNodes([userData]);
+        await this.userVault.writeToNodes([userDataToWrite]);
         console.log('New player data written to vault');
+        [userData] = await this.userVault.readFromNodes({ walletAddress });
+      }else{
+        console.log('User already initialized');
       }
 
       // Get message history
@@ -148,7 +305,7 @@ class DestinyGameAgent {
             role: "system",
             content: `Current Global State: ${JSON.stringify(globalState)}`
           },
-          { role: "user", content: userMessage }
+          { role: "user", content: JSON.stringify({choice: userMessage, walletAddress}) }
         ],
         response_format: { type: "json_object" }
       });
@@ -157,11 +314,46 @@ class DestinyGameAgent {
       const gameResponse = JSON.parse(completion.choices[0].message.content);
       console.log('Parsed game response:', gameResponse);
 
+      // Check if global state has changed and update it
+      if (gameResponse.globalEffects) {
+        const updatedGlobalState = {
+          marketTrend: gameResponse.globalEffects.marketTrend,
+          earthStatus: globalState.earthStatus,
+          marsStatus: globalState.marsStatus,
+          venusStatus: globalState.venusStatus,
+          collectiveGoal: gameResponse.globalEffects.collectiveGoal
+        };
+        await this.setGlobalState(updatedGlobalState);
+        console.log('Global state updated:', updatedGlobalState);
+      }
+
+
+      //update user stats
+      let newStats = gameResponse.userStats;
+
+      let newUserData = {
+        walletAddress,
+        currentWorld: newStats.world,
+        stats: {
+          balance: newStats.balance,
+          energy: newStats.energy,
+          reputation: newStats.reputation,
+          knowledge: newStats.knowledge,
+          nfts: newStats.nfts,
+          lastEvent: newStats.lastEvent
+        }
+      };
+      [userData] = await this.userVault.updateDataToNodes(
+        newUserData,
+        { walletAddress }
+      );
+
+
     // Handle blockchain operations
     if (gameResponse.blockchainCommand) {
       console.log('Executing blockchain command:', gameResponse.blockchainCommand);
       const { data } = await axios.post(
-        'https://autonome.alt.technology/destiny-kpsgho/chat',
+        'https://autonome.alt.technology/destiny-dbfzbu/chat',
         { message: gameResponse.blockchainCommand },
         {
         auth: {
@@ -170,9 +362,19 @@ class DestinyGameAgent {
         }
         }
       );
-      gameResponse.story += `\n\n🔗 Blockchain Update: ${data.response.join(' ')}`;
+      gameResponse.blockchainResponse += `${data.response.join(' ')}`;
       console.log('Blockchain update:', data.response);
     }
+
+    if (gameResponse.dallEPrompt) {
+      console.log('Generating DALL-E image:', gameResponse.dallEPrompt);
+      const imageResponse = await this.generateImage(gameResponse.dallEPrompt);
+
+      gameResponse.generatedImage = imageResponse.images[0].image_url;
+      console.log('Generated image URL:', gameResponse.generatedImage);
+      
+    }
+
 
 
       // Save interaction

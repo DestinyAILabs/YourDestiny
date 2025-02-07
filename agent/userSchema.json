@@ -15,9 +15,43 @@
             "currentWorld": {
                 "type": "string",
                 "enum": ["earth", "mars", "venus"]
+            },
+            "stats": {
+                "type": "object",
+                "properties": {
+                    "balance": {
+                        "type": "number"
+                    },
+                    "energy": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                    },
+                    "reputation": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                    },
+                    "knowledge": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                    },
+                    "nfts": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "lastEvent": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": ["balance", "energy", "reputation", "knowledge", "nfts", "lastEvent"]
             }
         },
-        "required": ["_id", "walletAddress", "currentWorld"],
+        "required": ["_id", "walletAddress", "currentWorld", "stats"],
         "additionalProperties": false
     }
   }

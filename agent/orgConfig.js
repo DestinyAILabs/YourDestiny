@@ -2,8 +2,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const orgConfig = {
-  usersSchemaId: "640e7f54-2003-44e0-8599-0e68665b9ad5",
-  messagesSchemaId: "7c4780f4-1709-4e2c-a258-f8a9cf05b09e",
+  usersSchemaId: "11c9611a-1b05-4124-a9f6-cfefaca6ba96",
+  messagesSchemaId: "103e6763-97ef-432a-9dbc-54f6e23e61f3",
+  worldSchemaId: "447360d3-858e-403a-97e9-3091f8f8f8fe",
   orgCredentials: {
     secretKey: process.env.NILLION_ORG_SECRET_KEY,
     orgDid: process.env.NILLION_ORG_DID,
