@@ -5,8 +5,10 @@ import { SecretVaultWrapper } from 'nillion-sv-wrappers';
 import dotenv from 'dotenv';
 dotenv.config();
 import { orgConfig } from './orgConfig.js';
+import cors from 'cors';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const openai = new OpenAI({
@@ -422,8 +424,12 @@ app.post('/destiny/getLatestMessage', async (req, res) => {
         const [latestMessage] = await gameAgent.messageVault.readFromNodes({
         walletAddress: req.body.walletAddress
         });
-        console.log('Sending latest message:', latestMessage.message.content);
-        res.json(latestMessage.message.content);
+        if (latestMessage) {
+            res.json(JSON.parse(latestMessage.message.content));
+        }
+        else {
+          res.json({});
+        }
     } catch (error) {
         console.error('Error fetching latest message:', error);
         res.status(500).json({ error: error.message });

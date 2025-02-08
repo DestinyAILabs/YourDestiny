@@ -1,31 +1,39 @@
 'use client';
 
 import React from 'react';
-import { scenario } from '../data/scenario';
 import { Box, Button, Typography, Card, CardMedia, CardContent } from '@mui/material';
+import axios from 'axios';
 
-export function GameScreen() {
-  const [currentScenario, setCurrentScenario] = React.useState(scenario.start);
+export function GameScreen({ gameData }) {
+  const [currentScenario, setCurrentScenario] = React.useState(gameData);
 
-  const handleChoice = (choice) => {
-    setCurrentScenario(scenario[choice.nextScenarioId]);
+  const handleChoice = async (choice) => {
+    try {
+      const response = await axios.post('http://localhost:3000/destiny/interact', {
+        walletAddress: '0x1234567890abcdef1234567890abcdef12345678',
+        message: choice.text
+      });
+      setCurrentScenario(response.data);
+    } catch (error) {
+      console.error('Error handling choice:', error);
+    }
   };
- 
+
   return (
     <Box maxWidth="lg" mx="auto" p={3} spacing={4}>
       <Card sx={{ position: 'relative', height: 400, borderRadius: 2, overflow: 'hidden' }}>
         <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)', zIndex: 10 }} />
-        {currentScenario.image && (
+        {currentScenario.generatedImage && (
           <CardMedia
             component="img"
-            image={currentScenario.image}
+            image={currentScenario.generatedImage}
             alt={currentScenario.title}
             sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         )}
         <CardContent sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, p: 3, zIndex: 20 }}>
           <Typography variant="h4" component="h2" color="white" gutterBottom>
-            {currentScenario.title}
+            {currentScenario.story}
           </Typography>
         </CardContent>
       </Card>
@@ -36,9 +44,9 @@ export function GameScreen() {
         </Typography>
 
         <Box spacing={2}>
-          {currentScenario.choices.map((choice) => (
+          {currentScenario.options.map((choice, index) => (
             <Button
-              key={choice.id}
+              key={index}
               onClick={() => handleChoice(choice)}
               fullWidth
               variant="contained"
