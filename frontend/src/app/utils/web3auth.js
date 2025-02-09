@@ -38,22 +38,6 @@ export async function initWeb3() {
       }
     }
 
-    // Add ERC20 token to MetaMask
-    try {
-      await window.ethereum.request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20',
-          options: {
-            address: '0x064E63D332049D750573f4a31c3075E44bA586a7',
-            symbol: 'DST',
-            decimals: 18
-          },
-        },
-      });
-    } catch (error) {
-      console.error('Error adding token to MetaMask:', error);
-    }
 
     return web3;
   } else {

@@ -10,15 +10,20 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import exampleData from './exampleData.json';
 import { initWeb3 } from './utils/web3auth';
+import AlertModal from './components/AlertModal';
 
 export default function Home() {
   const [gameData, setGameData] = useState(null);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [blockchainMessage, setBlockchainMessage] = useState('');
+  const [web3Instance, setWeb3Instance] = useState(null);
 
   useEffect(() => {
     const checkConnection = async () => {
       const web3 = await initWeb3();
       if (web3) {
+        setWeb3Instance(web3);
         const accounts = await web3.eth.getAccounts();
         if (accounts && accounts.length > 0) {
           setIsWalletConnected(true);
@@ -29,11 +34,37 @@ export default function Home() {
     checkConnection();
   }, []);
 
+  useEffect(() => {
+    if (gameData?.blockchainResponse) {
+      setBlockchainMessage(gameData.blockchainResponse);
+      setShowAlert(true);
+      const timer = setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [gameData]);
+
   const handleConnect = async () => {
-    const web3 = await initWeb3();
-    if (web3) {
-      const accounts = await web3.eth.getAccounts();
+    if (web3Instance) {
+      
+      const accounts = await web3Instance.eth.getAccounts();
       if (accounts && accounts.length > 0) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC20',
+              options: {
+                address: '0x064E63D332049D750573f4a31c3075E44bA586a7',
+                symbol: 'DST',
+                decimals: 18
+              },
+            },
+          });
+        } catch (error) {
+          console.error('Error adding token to MetaMask:', error);
+        }
         setIsWalletConnected(true);
         fetchGameData(accounts[0]);
       }
@@ -63,8 +94,7 @@ export default function Home() {
   const handleChoice = async (choice) => {
     setGameData(null);
     try {
-      const web3 = await initWeb3();
-      const accounts = await web3.eth.getAccounts();
+      const accounts = await web3Instance.eth.getAccounts();
       const response = await axios.post('http://localhost:3000/destiny/interact', {
         walletAddress: accounts[0],
         message: choice.text
@@ -85,17 +115,30 @@ export default function Home() {
       <AppBar position="static" sx={{ p: 1 }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Image src="/logo.svg" alt="Logo" width={0} height={0} style={{ width: 'auto', height: '50px' }} />
-          <WalletButton isConnected={isWalletConnected} onConnect={handleConnect} />
+          <WalletButton 
+            isConnected={isWalletConnected} 
+            onConnect={handleConnect}
+            web3={web3Instance}
+          />
         </Toolbar>
       </AppBar>
 
       <Container component="main" sx={{ py: 8 }}>
         {gameData ? (
-          <GameScreen currentScenario={gameData} handleChoice={handleChoice} />
+          <GameScreen 
+            currentScenario={gameData} 
+            handleChoice={handleChoice}
+            web3={web3Instance}
+          />
         ) : (
           <LoadingScreen />
         )}
       </Container>
+      <AlertModal 
+        open={showAlert}
+        message={blockchainMessage}
+        onClose={() => setShowAlert(false)}
+      />
     </Box>
   );
 }

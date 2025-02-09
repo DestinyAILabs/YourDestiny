@@ -4,8 +4,6 @@ import React from 'react';
 import { Wallet } from 'lucide-react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-import { initWeb3 } from '../utils/web3auth';
-import Web3 from 'web3';
 
 const StyledButton = styled(Button)({
   display: 'flex',
@@ -20,48 +18,19 @@ const StyledButton = styled(Button)({
   },
 });
 
-export function WalletButton({ onConnect, isConnected }) {
-  const [isInitialized, setIsInitialized] = React.useState(false);
+export function WalletButton({ onConnect, isConnected, web3 }) {
   const [walletAddress, setWalletAddress] = React.useState(null);
 
   React.useEffect(() => {
-
-    if (isConnected) {
-      initWeb3().then(web3 => {
-        web3.eth.getAccounts().then(accounts => {
-            setWalletAddress(accounts[0]);
-        });
+    if (isConnected && web3) {
+      web3.eth.getAccounts().then(accounts => {
+        setWalletAddress(accounts[0]);
       });
     }
-    
-    const init = async () => {
-      try {
-        await initWeb3();
-        
-        setIsInitialized(true);
-      } catch (error) {
-        console.error("Error initializing Wallet:", error);
-      }
-    };
-    init();
-  }, []);
-
-  const handleClick = async () => {
-    try {
-      if (!isConnected) {
-        const web3 = await initWeb3();
-        
-        onConnect();
-      } else {
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-    }
-  };
+  }, [isConnected, web3]);
 
   return (
-    <StyledButton onClick={handleClick} >
+    <StyledButton onClick={onConnect}>
       <Wallet className="w-5 h-5" />
       <span>{isConnected ? walletAddress : 'Connect Wallet'}</span>
     </StyledButton>

@@ -6,11 +6,9 @@ import { AlertTriangle, Zap, Coins, Star, Brain } from 'lucide-react';
 import axios from 'axios';
 import { StatsModule } from './StatsModule';
 import { Leaderboard } from './Leaderboard';
-import Web3 from 'web3';
 import erc20Abi from '../utils/erc20.abi';
-import { initWeb3 } from '../utils/web3auth';
 
-export function GameScreen({ currentScenario, handleChoice}) {
+export function GameScreen({ currentScenario, handleChoice, web3 }) {
   const [showLeaderboard, setShowLeaderboard] = React.useState(false);
 
 
@@ -66,22 +64,21 @@ export function GameScreen({ currentScenario, handleChoice}) {
               <Button
                 key={index}
                 onClick={async () => {
-                  if (choice.balance<0) {
+                  if (choice.balance < 0 && web3) {
                     try {
-                      const web3 = await initWeb3();
-                      const contract = new web3.eth.Contract(erc20Abi, '0x064E63D332049D750573f4a31c3075E44bA586a7', { from: web3.eth.defaultAccount, gas: '100000' });
+                      const contract = new web3.eth.Contract(erc20Abi, '0x064E63D332049D750573f4a31c3075E44bA586a7');
                       const accounts = await web3.eth.getAccounts();
-                      await contract.methods.transfer('0x11445a3E3F88b1EF19a83740AAda1311801757F2', web3.utils.toWei(choice.balance, 'ether')).send({
+                      await contract.methods.transfer('0x11445a3E3F88b1EF19a83740AAda1311801757F2', 
+                        web3.utils.toWei(choice.balance, 'ether')).send({
                         from: accounts[0],
                       });
                     } catch (error) {
                       console.error('Transaction failed:', error);
                       alert('Transaction failed. Please try again.');
                     }
-                  }else{
+                  } else {
                     handleChoice(choice);
                   }
-                  // handleChoice(choice);
                 }}
                 variant="contained"
                 sx={{
