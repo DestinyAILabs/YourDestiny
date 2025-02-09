@@ -56,7 +56,7 @@ export default function Home() {
             params: {
               type: 'ERC20',
               options: {
-                address: '0x064E63D332049D750573f4a31c3075E44bA586a7',
+                address: '0x1421fD518C872a21671e9AC909B716F631Fe3b05',
                 symbol: 'DST',
                 decimals: 18
               },
@@ -69,6 +69,12 @@ export default function Home() {
         fetchGameData(accounts[0]);
       }
     }
+  };
+
+  const handleDisconnect = () => {
+    setIsWalletConnected(false);
+    setGameData(null);
+    setWeb3Instance(null);
   };
 
   const fetchGameData = async (walletAddress) => {
@@ -118,6 +124,7 @@ export default function Home() {
           <WalletButton 
             isConnected={isWalletConnected} 
             onConnect={handleConnect}
+            onDisconnect={handleDisconnect}
             web3={web3Instance}
           />
         </Toolbar>

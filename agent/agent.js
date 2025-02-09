@@ -46,7 +46,7 @@ You are the Chaotic Game Master of "Your Destiny", a brutally funny blockchain R
     "collectiveGoal": "goal description"
   },
   "blockchainCommand": "optional natural language command",
-  "dallEPrompt": "Whimsical scene combining crypto disasters with pop culture"
+  "dallEPrompt": "Whimsical cartoon scene combining crypto disasters with pop culture"
 }
 
 2. Core Game Rules:
@@ -63,8 +63,7 @@ You are the Chaotic Game Master of "Your Destiny", a brutally funny blockchain R
 - Crypto influencers might DM you malware
 - Your grandma starts shitposting crypto advice
 - DAO meetings devolve into food fights
-- Add 1 WTF element to every story
-
+- Add many more absurd and chaotic WTF elements
 
 3. Example Disaster Scenarios:
 - "Invest in Legit Project" → Rug pull, lose 50% balance, gain NFT: "Proof of Bad Decision"
@@ -91,18 +90,25 @@ You are the Chaotic Game Master of "Your Destiny", a brutally funny blockchain R
 - Trigger world events and blockchain commands
 - Blockchain commands are executed when a mint is triggered or transfer is needed to the player (Only + $DST not - $DST)
 - Monitor global economy and player progress
-- Generate DALL-E prompts for visual storytelling about the current scene. Make the scene gamified. Request images in game style.
+- Generate DALL-E prompts for visual storytelling about the current scene. Make the scene gamified. Request images in cartoon style.
 - When an option with a cost is chosen, subtract it from userStats but don't trigger blockchainCommand for it. It's handled automatically.
+- On choices with rewards, use blockchainCommand to send the reward only as DST to the player's wallet. Can't use any other token. Only DST.
 
 7. Blockchain Command Guidelines:
 - Use natural language commands
-- Creating a new NFT or coin, say "Create a new NFT contract called 'NFT Name' with description 'Description'. other details are random. After creation, mint and send it to 0x1234567890abcdef1234567890abcdef12345678"
+- Creating a new NFT or coin, say "Create a new NFT/ERC20 Token contract called 'NFT Name'/'Token name and Ticker' with description 'Description'. other details are random. After creation, mint and send it to 0x1234567890abcdef1234567890abcdef12345678"
 - Sending $DST to a player, say "Send 100 $DST to 0x1234567890abcdef1234567890abcdef12345678"
+- Can't send any other token or amount other than $DST or a Token created in the same session
 
 8. Game Master Mandates:
 - Reward creativity with absurdity
 - Turn corporate crypto jargon into literal jokes
 - Make Elon Musk a recurring lolcow
+- Add pop culture references and memes
+- Embrace chaos and player-driven storytelling
+- High risk choices often fail with hilarious and unexpected results. 
+- If the user takes so many risks, they can fail miserably. 
+- If the energy is 0, the user faints and wakes up at a random location with 50 energy
 
 9. Starting Game: 
 - Initialize player with 100 $DST, 50 energy, Earth
@@ -160,8 +166,11 @@ You are the Chaotic Game Master of "Your Destiny", a brutally funny blockchain R
     "collectiveGoal": "build space elevator"
   },
   "blockchainCommand": "transfer 25 $DST to 0x1234567890abcdef1234567890abcdef12345678",
-  "dallEPrompt": "A chaotic market scene with traders panicking, NFTs fluctuating wildly, and a futuristic cityscape in the background."
+  "dallEPrompt": "A chaotic market scene with traders panicking, NFTs fluctuating wildly, and a futuristic cityscape in the background. cartoon style"
 }
+
+12. Remember to keep the responses engaging and absurd. The more chaotic, the better!
+13. Don't forget to faint the user if they run out of energy (lower than 5) and wake them up at a random location with 50 energy.
 `;
 
 class DestinyGameAgent {
@@ -294,7 +303,7 @@ class DestinyGameAgent {
         .map(msg => ({
           role: msg.message.role,
           content: msg.message.content
-        }));
+        })).reverse();
       console.log('Message history fetched:', messages);
 
       // Generate AI response
@@ -442,13 +451,17 @@ app.get('/destiny/leaderboard', async (req, res) => {
   try {
     await gameAgent.userVault.init();
     const users = await gameAgent.userVault.readFromNodes();
-    const leaderboard = users.map(user => ({
+    const leaderboard = users.map((user) => ({
       walletAddress: user.walletAddress,
       balance: user.stats.balance,
       energy: user.stats.energy,
       reputation: user.stats.reputation,
-      knowledge: user.stats.knowledge
+      knowledge: user.stats.knowledge,
+      avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${Math.floor(Math.random() * 1000)}`
     })).sort((a, b) => b.balance - a.balance);
+    leaderboard.forEach((user, index) => {
+      user.rank = index + 1;
+    });
     res.json(leaderboard);
   } catch (error) {
     console.error('Error fetching leaderboard:', error);

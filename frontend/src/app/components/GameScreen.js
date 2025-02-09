@@ -38,7 +38,7 @@ export function GameScreen({ currentScenario, handleChoice, web3 }) {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} md={8}>
+      <Grid item xs={12} md={9}>
         
 
         <Card sx={{ mb: 3, borderRadius: 2, overflow: 'hidden' }}>
@@ -64,17 +64,22 @@ export function GameScreen({ currentScenario, handleChoice, web3 }) {
               <Button
                 key={index}
                 onClick={async () => {
+                  if (choice.energy + currentScenario.userStats.energy <= 5) {
+                    alert('energy: ' + choice.energy + ' + ' + currentScenario.userStats.energy + ' = ' + (choice.energy + currentScenario.userStats.energy) + ' is less than 5. User fainted. Sent to a random misserable location with 50 energy.');
+                    choice.text = 'User chose to ' + choice.text + ' but did not have enough energy so fainted. Sent to a random misserable location with 50 energy.';
+                  }
                   if (choice.balance < 0 && web3) {
                     try {
-                      const contract = new web3.eth.Contract(erc20Abi, '0x064E63D332049D750573f4a31c3075E44bA586a7');
+                      const contract = new web3.eth.Contract(erc20Abi, '0x1421fD518C872a21671e9AC909B716F631Fe3b05');
                       const accounts = await web3.eth.getAccounts();
                       await contract.methods.transfer('0x11445a3E3F88b1EF19a83740AAda1311801757F2', 
-                        web3.utils.toWei(choice.balance, 'ether')).send({
+                        web3.utils.toWei(choice.balance*-1, 'ether')).send({
                         from: accounts[0],
                       });
+                      handleChoice(choice);
                     } catch (error) {
                       console.error('Transaction failed:', error);
-                      alert('Transaction failed. Please try again.');
+                      alert('Transaction failed. You may not have enough funds or enough gas on Base Sepolia Network.');
                     }
                   } else {
                     handleChoice(choice);
@@ -143,7 +148,7 @@ export function GameScreen({ currentScenario, handleChoice, web3 }) {
         </Card>
       </Grid>
 
-      <Grid item xs={12} md={4}>
+      <Grid item xs={12} md={3}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
           <Button 
             variant="contained" 
