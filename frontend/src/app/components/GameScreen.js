@@ -64,7 +64,6 @@ export function GameScreen({ currentScenario, handleChoice, web3 }) {
                 key={index}
                 onClick={async () => {
                   if (choice.energy + currentScenario.userStats.energy <= 5) {
-                    alert('energy: ' + choice.energy + ' + ' + currentScenario.userStats.energy + ' = ' + (choice.energy + currentScenario.userStats.energy) + ' is less than 5. User fainted. Sent to a random misserable location with 50 energy.');
                     choice.text = 'User chose to ' + choice.text + ' but did not have enough energy so fainted. Sent to a random misserable location with 50 energy.';
                   }
                   if (choice.balance < 0 && web3) {

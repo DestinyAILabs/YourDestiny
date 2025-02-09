@@ -4,6 +4,10 @@ A next-generation gaming experience powered by state-of-the-art AI and secure da
 
 Embark on a wild blockchain journey as a curious crypto creature! Navigate decentralized realms, trade NFTs, outsmart scammers, and ally with AI agents. Your choices shape the story. Can you level up from noob to crypto legend? 
 
+## Play Now
+
+Experience Your Destiny at [destiny.thenewinternet.org](https://destiny.thenewinternet.org/)
+
 ## Technology Stack
 
 - **Autonome**: Autonome is a platform designed for the building, deployment, and distribution of autonomous AI agents. 
