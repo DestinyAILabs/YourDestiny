@@ -7,19 +7,19 @@ import Image from 'next/image';
 import { WalletButton } from "./WalletButton";
 const features = [
   {
+    icon: <Wallet size={32} color="#00BFFF" />,
+    title: "Connect & Play",
+    description: "Join the adventure by connecting your wallet"
+  },
+  {
     icon: <Coins size={32} color="#FFD700" />,
-    title: "Crypto Trading",
-    description: "Experience the thrill of crypto trading in a risk-free environment"
+    title: "Discover & Decide",
+    description: "Explore the crypto universe and make strategic decisions"
   },
   {
     icon: <Trophy size={32} color="#C0C0C0" />,
     title: "Compete & Win",
     description: "Climb the leaderboard and prove your crypto trading skills"
-  },
-  {
-    icon: <Brain size={32} color="#9945FF" />,
-    title: "Learn & Grow",
-    description: "Master crypto concepts through interactive gameplay"
   }
 ];
 
@@ -55,8 +55,8 @@ export function LandingPage({ onConnect, isConnected }) {
               boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
             }}>
               <Image
-                src="/logo1.svg"
-                alt="Crypto Adventure"
+                src="/logo.svg"
+                alt="Your Destiny"
                 layout="fill"
                 objectFit="contain"
               />

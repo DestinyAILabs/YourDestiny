@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 import styles from "./page.module.css";
 import { WalletButton } from "./components/WalletButton";
@@ -9,7 +9,7 @@ import { Box, Container, AppBar, Toolbar, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import exampleData from './exampleData.json';
-import { web3auth } from './utils/web3auth';
+import { initWeb3 } from './utils/web3auth';
 
 export default function Home() {
   const [gameData, setGameData] = useState(null);
@@ -17,30 +17,34 @@ export default function Home() {
 
   useEffect(() => {
     const checkConnection = async () => {
-      if (web3auth.connected) {
-        setIsWalletConnected(true);
-        fetchGameData();
+      const web3 = await initWeb3();
+      if (web3) {
+        const accounts = await web3.eth.getAccounts();
+        if (accounts && accounts.length > 0) {
+          setIsWalletConnected(true);
+          fetchGameData(accounts[0]);
+        }
       }
     };
     checkConnection();
   }, []);
 
   const handleConnect = async () => {
-     if (web3auth.connected) {
+    const web3 = await initWeb3();
+    if (web3) {
+      const accounts = await web3.eth.getAccounts();
+      if (accounts && accounts.length > 0) {
         setIsWalletConnected(true);
-        fetchGameData();
+        fetchGameData(accounts[0]);
       }
+    }
   };
 
-  const fetchGameData = async () => {
+  const fetchGameData = async (walletAddress) => {
     try {
-      const userInfo = await web3auth.getUserInfo();
-      const walletAddress = userInfo.publicAddress;
-
       const latestMessageResponse = await axios.post('http://localhost:3000/destiny/getLatestMessage', {
         walletAddress
       });
-
       if (Object.keys(latestMessageResponse.data).length === 0) {
         const startGameResponse = await axios.post('http://localhost:3000/destiny/interact', {
           walletAddress,
@@ -59,11 +63,10 @@ export default function Home() {
   const handleChoice = async (choice) => {
     setGameData(null);
     try {
-      const userInfo = await web3auth.getUserInfo();
-      const walletAddress = userInfo.publicAddress;
-
+      const web3 = await initWeb3();
+      const accounts = await web3.eth.getAccounts();
       const response = await axios.post('http://localhost:3000/destiny/interact', {
-        walletAddress,
+        walletAddress: accounts[0],
         message: choice.text
       });
       setGameData(response.data);
@@ -74,20 +77,24 @@ export default function Home() {
   };
 
   if (!isWalletConnected) {
-    return <LandingPage onConnect={handleConnect} isConnected={isWalletConnected}/>;
+    return <LandingPage onConnect={handleConnect} isConnected={isWalletConnected} />;
   }
 
   return (
     <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #212121, #7e57c2)' }}>
       <AppBar position="static" sx={{ p: 1 }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Image src="/logo1.svg" alt="Logo" width={0} height={0} style={{ width: 'auto', height: '50px' }} />
+          <Image src="/logo.svg" alt="Logo" width={0} height={0} style={{ width: 'auto', height: '50px' }} />
           <WalletButton isConnected={isWalletConnected} onConnect={handleConnect} />
         </Toolbar>
       </AppBar>
 
       <Container component="main" sx={{ py: 8 }}>
-        {gameData ? <GameScreen currentScenario={gameData} handleChoice={handleChoice} /> : <LoadingScreen />}
+        {gameData ? (
+          <GameScreen currentScenario={gameData} handleChoice={handleChoice} />
+        ) : (
+          <LoadingScreen />
+        )}
       </Container>
     </Box>
   );

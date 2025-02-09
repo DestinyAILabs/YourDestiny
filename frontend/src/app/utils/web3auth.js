@@ -1,44 +1,62 @@
 'use client';
 
-import { Web3Auth } from "@web3auth/modal";
-import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import Web3 from 'web3';
 
-const clientId = "BKsQBHiF4w2RKyMpi-sVybhUYgjrMsyvqK5hxy8VGN3E5XYNTRrFsNtVQ7YXu2FXRHxNw8egKs1V2SrDiDDVMbw"; // Get this from Web3Auth Dashboard
+let web3;
 
-export const web3auth = new Web3Auth({
-  clientId,
-  chainConfig: {
-    chainNamespace: CHAIN_NAMESPACES.EIP155,
-    chainId: "0x1", // Ethereum mainnet
-    rpcTarget: "https://rpc.ankr.com/eth",
-  },
-  web3AuthNetwork: "cyan",
-});
+export async function initWeb3() {
+  if (window.ethereum) {
+    web3 = new Web3(window.ethereum);
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x14A34' }],
+      });
+    } catch (switchError) {
+      if (switchError.code === 4902) {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x14A34',
+            chainName: 'Base Sepolia',
+            nativeCurrency: {
+              name: 'Ethereum',
+              symbol: 'ETH',
+              decimals: 18
+            },
+            rpcUrls: ['https://sepolia.base.org'],
+            blockExplorerUrls: ['https://sepolia-explorer.base.org']
+          }]
+        });
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x14A34' }]
+        });
+      } else {
+        throw switchError;
+      }
+    }
 
-const openloginAdapter = new OpenloginAdapter({
-  loginSettings: {
-    mfaLevel: "none",
-  },
-  adapterSettings: {
-    whiteLabel: {
-      name: "Crypto Adventure",
-      logoLight: "https://your-logo-url.com/logo.png",
-      logoDark: "https://your-logo-url.com/logo-dark.png",
-      defaultLanguage: "en",
-      dark: true,
-    },
-  },
-});
+    // Add ERC20 token to MetaMask
+    try {
+      await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: '0x064E63D332049D750573f4a31c3075E44bA586a7',
+            symbol: 'DST',
+            decimals: 18
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error adding token to MetaMask:', error);
+    }
 
-web3auth.configureAdapter(openloginAdapter);
-
-export const initWeb3Auth = async () => {
-  try {
-    await web3auth.initModal();
-    return web3auth;
-  } catch (error) {
-    console.error("Error initializing Web3Auth:", error);
-    throw error;
+    return web3;
+  } else {
+    console.error("No web3 provider found");
   }
-};
+}

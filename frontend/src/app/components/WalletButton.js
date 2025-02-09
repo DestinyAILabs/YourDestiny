@@ -4,8 +4,8 @@ import React from 'react';
 import { Wallet } from 'lucide-react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-import { web3auth, initWeb3Auth } from '../utils/web3auth';
-import { ethers } from 'ethers';
+import { initWeb3 } from '../utils/web3auth';
+import Web3 from 'web3';
 
 const StyledButton = styled(Button)({
   display: 'flex',
@@ -25,29 +25,22 @@ export function WalletButton({ onConnect, isConnected }) {
   const [walletAddress, setWalletAddress] = React.useState(null);
 
   React.useEffect(() => {
-    if (isConnected) {
-      const web3authProvider = web3auth.connect().then((provider) => {
-        if (provider) {
-          const web3Provider = new ethers.providers.Web3Provider(provider);
-          
-          const signer = web3Provider.getSigner();
 
-          const address = signer.getAddress().then((address) => {
-            console.log("Wallet address:", address);
-            setWalletAddress(address);
-          });
-        } else {
-          console.error("No provider found");
-        }
+    if (isConnected) {
+      initWeb3().then(web3 => {
+        web3.eth.getAccounts().then(accounts => {
+            setWalletAddress(accounts[0]);
+        });
       });
     }
+    
     const init = async () => {
       try {
-        await initWeb3Auth();
-
+        await initWeb3();
+        
         setIsInitialized(true);
       } catch (error) {
-        console.error("Error initializing Web3Auth:", error);
+        console.error("Error initializing Wallet:", error);
       }
     };
     init();
@@ -56,14 +49,10 @@ export function WalletButton({ onConnect, isConnected }) {
   const handleClick = async () => {
     try {
       if (!isConnected) {
-        const web3authProvider = await web3auth.connect();
-        if (web3authProvider) {
-          const userInfo = await web3auth.getUserInfo();
-          console.log("User info:", userInfo);
-          onConnect();
-        }
+        const web3 = await initWeb3();
+        
+        onConnect();
       } else {
-        await web3auth.logout();
         window.location.reload();
       }
     } catch (error) {

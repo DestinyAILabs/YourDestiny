@@ -96,7 +96,7 @@ You are the Chaotic Game Master of "Your Destiny", a brutally funny blockchain R
 
 7. Blockchain Command Guidelines:
 - Use natural language commands
-- Creating a new NFT or coin, say "Create a new NFT called 'NFT Name' with description 'Description'. other details are random. After creation, mint and send it to 0x1234567890abcdef1234567890abcdef12345678"
+- Creating a new NFT or coin, say "Create a new NFT contract called 'NFT Name' with description 'Description'. other details are random. After creation, mint and send it to 0x1234567890abcdef1234567890abcdef12345678"
 - Sending $DST to a player, say "Send 100 $DST to 0x1234567890abcdef1234567890abcdef12345678"
 
 8. Game Master Mandates:
@@ -436,6 +436,25 @@ app.post('/destiny/getLatestMessage', async (req, res) => {
     }
     }
 );
+
+app.get('/destiny/leaderboard', async (req, res) => {
+  console.log('Received leaderboard request');
+  try {
+    await gameAgent.userVault.init();
+    const users = await gameAgent.userVault.readFromNodes();
+    const leaderboard = users.map(user => ({
+      walletAddress: user.walletAddress,
+      balance: user.stats.balance,
+      energy: user.stats.energy,
+      reputation: user.stats.reputation,
+      knowledge: user.stats.knowledge
+    })).sort((a, b) => b.balance - a.balance);
+    res.json(leaderboard);
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
