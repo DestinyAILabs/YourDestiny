@@ -13,7 +13,6 @@ import axios from 'axios';
 import exampleData from './exampleData.json';
 import { initWeb3 } from './utils/web3auth';
 import AlertModal from './components/AlertModal';
-import { Audio } from 'next';
 
 export default function Home() {
   const [gameData, setGameData] = useState(null);
@@ -22,7 +21,13 @@ export default function Home() {
   const [blockchainMessage, setBlockchainMessage] = useState('');
   const [web3Instance, setWeb3Instance] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [audio] = useState(new Audio('/themeSong.mp3'));
+  const [audio, setAudio] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setAudio(new Audio('/themeSong.mp3'));
+    }
+  }, []);
 
 
   useEffect(() => {
