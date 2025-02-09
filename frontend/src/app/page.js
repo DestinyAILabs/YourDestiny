@@ -5,7 +5,9 @@ import { WalletButton } from "./components/WalletButton";
 import { GameScreen } from "./components/GameScreen";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { LandingPage } from "./components/LandingPage";
-import { Box, Container, AppBar, Toolbar, Typography } from '@mui/material';
+import { Box, Container, AppBar, Toolbar, Typography, IconButton } from '@mui/material';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import exampleData from './exampleData.json';
@@ -18,6 +20,9 @@ export default function Home() {
   const [showAlert, setShowAlert] = useState(false);
   const [blockchainMessage, setBlockchainMessage] = useState('');
   const [web3Instance, setWeb3Instance] = useState(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [audio] = useState(new Audio('/themeSong.mp3'));
+
 
   useEffect(() => {
     const checkConnection = async () => {
@@ -35,6 +40,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (isWalletConnected && audio) {
+      audio.loop = true;
+      audio.play().catch(e => console.log('Audio play failed:', e));
+    } else if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [isWalletConnected, audio]);
+
+  useEffect(() => {
     if (gameData?.blockchainResponse) {
       setBlockchainMessage(gameData.blockchainResponse);
       setShowAlert(true);
@@ -44,6 +59,12 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [gameData]);
+
+  useEffect(() => {
+    if (audio) {
+      audio.muted = isMuted;
+    }
+  }, [isMuted, audio]);
 
   const handleConnect = async () => {
     if (web3Instance) {
@@ -77,13 +98,17 @@ export default function Home() {
     setWeb3Instance(null);
   };
 
+  const handleMuteToggle = () => {
+    setIsMuted(!isMuted);
+  };
+
   const fetchGameData = async (walletAddress) => {
     try {
-      const latestMessageResponse = await axios.post('http://localhost:3000/destiny/getLatestMessage', {
+      const latestMessageResponse = await axios.post('https://0x7cebaf36996a9ee3bb1bee91fcb49b80470aa413.diode.link/destiny/getLatestMessage', {
         walletAddress
       });
       if (Object.keys(latestMessageResponse.data).length === 0) {
-        const startGameResponse = await axios.post('http://localhost:3000/destiny/interact', {
+        const startGameResponse = await axios.post('https://0x7cebaf36996a9ee3bb1bee91fcb49b80470aa413.diode.link/destiny/interact', {
           walletAddress,
           message: 'Start Game'
         });
@@ -101,7 +126,7 @@ export default function Home() {
     setGameData(null);
     try {
       const accounts = await web3Instance.eth.getAccounts();
-      const response = await axios.post('http://localhost:3000/destiny/interact', {
+      const response = await axios.post('https://0x7cebaf36996a9ee3bb1bee91fcb49b80470aa413.diode.link/destiny/interact', {
         walletAddress: accounts[0],
         message: choice.text
       });
@@ -117,20 +142,31 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #212121, #7e57c2)' }}>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #212121,rgba(103, 87, 194, 0.81))' }}>
       <AppBar position="static" sx={{ p: 1 }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Image src="/logo.svg" alt="Logo" width={0} height={0} style={{ width: 'auto', height: '50px' }} />
-          <WalletButton 
-            isConnected={isWalletConnected} 
-            onConnect={handleConnect}
-            onDisconnect={handleDisconnect}
-            web3={web3Instance}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {isWalletConnected && (
+              <IconButton 
+                color="inherit" 
+                onClick={handleMuteToggle}
+                aria-label={isMuted ? "Unmute" : "Mute"}
+              >
+                {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+              </IconButton>
+            )}
+            <WalletButton 
+              isConnected={isWalletConnected} 
+              onConnect={handleConnect}
+              onDisconnect={handleDisconnect}
+              web3={web3Instance}
+            />
+          </Box>
         </Toolbar>
       </AppBar>
 
-      <Container component="main" sx={{ py: 8 }}>
+      <Container component="main" sx={{ py: 5 }} style={{alignContent: 'center', maxWidth: '90%' }}>
         {gameData ? (
           <GameScreen 
             currentScenario={gameData} 

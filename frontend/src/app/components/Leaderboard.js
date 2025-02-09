@@ -87,7 +87,7 @@ export function Leaderboard() {
 useEffect(() => {
   const fetchLeaderboardData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/destiny/leaderboard');
+      const response = await axios.get('https://0x7cebaf36996a9ee3bb1bee91fcb49b80470aa413.diode.link/destiny/leaderboard');
       setLeaderboardData(response.data);
     } catch (error) {
       console.error('Error fetching leaderboard data:', error);

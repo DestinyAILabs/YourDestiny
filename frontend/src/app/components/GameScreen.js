@@ -38,16 +38,14 @@ export function GameScreen({ currentScenario, handleChoice, web3 }) {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} md={9}>
-        
-
+      <Grid item xs={12} md={6}>
         <Card sx={{ mb: 3, borderRadius: 2, overflow: 'hidden' }}>
           {currentScenario.generatedImage && (
             <CardMedia
               component="img"
               image={currentScenario.generatedImage}
               alt="Scenario"
-              sx={{ width: '100%', height: '300px', objectFit: 'cover' }}
+              sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           )}
         </Card>
@@ -57,7 +55,8 @@ export function GameScreen({ currentScenario, handleChoice, web3 }) {
             {currentScenario.story}
           </Typography>
         </Card>
-
+      </Grid>
+      <Grid item xs={12} md={4}>
         <Card sx={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', borderRadius: 2, p: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {currentScenario.options.map((choice, index) => (
@@ -147,17 +146,24 @@ export function GameScreen({ currentScenario, handleChoice, web3 }) {
           </Box>
         </Card>
       </Grid>
-
-      <Grid item xs={12} md={3}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+      <Grid item xs={12} md={2} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Card sx={{ 
+          background: 'rgba(255, 255, 255, 0.1)', 
+          backdropFilter: 'blur(10px)', 
+          borderRadius: 2, 
+          p: 2 
+        }}>
           <Button 
             variant="contained" 
             onClick={() => setShowLeaderboard(true)}
-            sx={{ background: 'rgba(103, 58, 183, 0.6)' }}
+            sx={{ 
+              background: 'rgba(103, 58, 183, 0.6)',
+              width: '100%'
+            }}
           >
             View Leaderboard
           </Button>
-        </Box>
+        </Card>
         <StatsModule stats={currentScenario.userStats} globalEffects={currentScenario.globalEffects} />
       </Grid>
     </Grid>
