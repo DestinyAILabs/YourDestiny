@@ -13,6 +13,7 @@ import axios from 'axios';
 import exampleData from './exampleData.json';
 import { initWeb3 } from './utils/web3auth';
 import AlertModal from './components/AlertModal';
+import { Audio } from 'next';
 
 export default function Home() {
   const [gameData, setGameData] = useState(null);
