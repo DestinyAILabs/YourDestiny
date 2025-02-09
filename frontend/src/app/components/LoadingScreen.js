@@ -89,7 +89,7 @@ export function LoadingScreen() {
           textAlign: 'center',
         }}
       >
-        Loading Crypto Adventure...
+        Crypto Gods are Deciding your Destiny...
       </Typography>
     </Box>
   );

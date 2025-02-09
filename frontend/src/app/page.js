@@ -20,14 +20,8 @@ export default function Home() {
   const [showAlert, setShowAlert] = useState(false);
   const [blockchainMessage, setBlockchainMessage] = useState('');
   const [web3Instance, setWeb3Instance] = useState(null);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [audio, setAudio] = useState(null);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setAudio(new Audio('/themeSong.mp3'));
-    }
-  }, []);
 
 
   useEffect(() => {
@@ -37,6 +31,7 @@ export default function Home() {
         setWeb3Instance(web3);
         const accounts = await web3.eth.getAccounts();
         if (accounts && accounts.length > 0) {
+          setAudio(new Audio('/themeSong.mp3'))
           setIsWalletConnected(true);
           fetchGameData(accounts[0]);
         }
@@ -46,14 +41,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (isWalletConnected && audio) {
+    if (isWalletConnected && audio && !isMuted) {
       audio.loop = true;
       audio.play().catch(e => console.log('Audio play failed:', e));
     } else if (audio) {
       audio.pause();
       audio.currentTime = 0;
     }
-  }, [isWalletConnected, audio]);
+  }, [isWalletConnected, audio, isMuted]);
 
   useEffect(() => {
     if (gameData?.blockchainResponse) {

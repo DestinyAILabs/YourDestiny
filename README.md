@@ -6,9 +6,9 @@ Embark on a wild blockchain journey as a curious crypto creature! Navigate decen
 
 ## Technology Stack
 
-- **Autonome**: Advanced AI decision engine powering NPC behaviors and dynamic storylines
-- **AgentKit by CDP**: Intelligent agent framework for character interactions and world simulation
-- **Nillion SecretVault**: Zero-knowledge proof technology for secure player data storage
+- **Autonome**: Autonome is a platform designed for the building, deployment, and distribution of autonomous AI agents. 
+- **AgentKit by CDP**: AgentKit by Coinbase Developer Platform allows anyone to give their AI agents access to a crypto wallet and onchain interactions with a comprehensive set of actions and plug-and-play integrations with top frameworks. 
+- **Nillion SecretVault**: Nillion's SecretVault is a secure data store perfect for single agents or coordinating swarms. Protect sensitive information like agent memory, shared knowledge, and user interactions while keeping public data accessible.
 
 ## Features
 
